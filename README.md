@@ -34,7 +34,7 @@ A comprehensive web-based platform for managing student projects, assignments, a
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/spms.git
+   git clone https://github.com/mrerror313coder/spms.git
    cd spms
    ```
 
@@ -102,7 +102,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Authors
 
-- Your Name
+- [M Hamza Mirani](https://github.com/mrerror313coder)
 
 ## Acknowledgments
 
