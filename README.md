@@ -30,7 +30,7 @@ A comprehensive web-based platform for managing student projects, assignments, a
   - Provide feedback to students
   - View submission history
 
-## Installation
+## Local Development Setup
 
 1. Clone the repository:
    ```bash
@@ -71,13 +71,109 @@ A comprehensive web-based platform for managing student projects, assignments, a
    python manage.py runserver
    ```
 
-## Usage
+## Production Deployment (PythonAnywhere)
 
-1. Access the admin interface at `/admin` to manage users and content
+1. Sign up for a PythonAnywhere account at https://www.pythonanywhere.com/
+
+2. Go to the Dashboard and create a new Web App:
+   - Choose Manual Configuration
+   - Choose Python 3.9 or later
+
+3. Set up your virtual environment:
+   ```bash
+   mkvirtualenv --python=/usr/bin/python3.9 spms-env
+   ```
+
+4. Clone your repository:
+   ```bash
+   git clone https://github.com/mrerror313coder/spms.git
+   ```
+
+5. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+6. Create a .env file with production settings:
+   - Copy the contents from .env.production
+   - Update with your actual values
+
+7. Configure your web app:
+   - Source code: /home/yourusername/spms
+   - Working directory: /home/yourusername/spms
+   - Virtual environment: /home/yourusername/.virtualenvs/spms-env
+
+8. Update WSGI configuration file:
+   ```python
+   import os
+   import sys
+   from dotenv import load_dotenv
+   
+   # Add your project directory to the sys.path
+   path = '/home/yourusername/spms'
+   if path not in sys.path:
+       sys.path.append(path)
+   
+   # Load environment variables
+   load_dotenv(os.path.join(path, '.env'))
+   
+   # Set up Django
+   os.environ['DJANGO_SETTINGS_MODULE'] = 'spms.settings'
+   
+   # Import Django WSGI handler
+   from django.core.wsgi import get_wsgi_application
+   application = get_wsgi_application()
+   ```
+
+9. Set up static files:
+   ```bash
+   python manage.py collectstatic
+   ```
+
+10. Configure static files in PythonAnywhere:
+    - URL: /static/
+    - Directory: /home/yourusername/spms/staticfiles
+
+11. Configure media files:
+    - URL: /media/
+    - Directory: /home/yourusername/spms/media
+
+12. Create database and superuser:
+    ```bash
+    python manage.py migrate
+    python manage.py createsuperuser
+    ```
+
+13. Reload your web app
+
+## Usage Guide
+
+### For Administrators
+1. Access the admin interface at `/admin`
+2. Create teacher accounts
+3. Monitor system activity
+
+### For Teachers
+1. Log in to your account
 2. Create classes and add students
-3. Create projects and assign them to classes
-4. Students can submit their work through the platform
-5. Teachers can grade submissions and provide feedback
+3. Create projects and assignments
+4. Grade submissions and provide feedback
+
+### For Students
+1. Log in to your account
+2. Join classes (if not automatically added)
+3. View and submit assignments
+4. Track your progress and grades
+
+## Security Features
+
+- SSL/TLS encryption in production
+- Secure password hashing
+- CSRF protection
+- XSS prevention
+- Secure cookie handling
+- Password reset functionality
+- Role-based access control
 
 ## Tech Stack
 
