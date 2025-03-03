@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} - SPMS{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{{ project.title }}</h1>
+        <p class="lead">{{ project.description }}</p>
+    </div>
+    <div class="col-md-4 text-end">
+        {% if user.user_type == 'student' %}
+            <a href="{% url 'submission_create' project.pk %}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Submit Project
+            </a>
+        {% endif %}
+        {% if user == project.created_by or user.user_type == 'admin' %}
+            <a href="{% url 'project_edit' project.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'project_delete' project.pk %}" class="btn btn-outline-danger">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Project Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Due Date:</strong> {{ project.due_date|date:"F j, Y, g:i a" }}</p>
+                <p><strong>Created By:</strong> {{ project.created_by.get_full_name }}</p>
+                <p><strong>Class:</strong> {{ project.assigned_class.name }}</p>
+                <p><strong>Maximum Score:</strong> {{ project.max_score }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Submissions</h5>
+            </div>
+            <div class="card-body">
+                {% if user.user_type != 'student' %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Score</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in project.submissions.all %}
+                                <tr>
+                                    <td>{{ submission.student.get_full_name }}</td>
+                                    <td>
+                                        <span class="badge {% if submission.status == 'graded' %}bg-success{% elif submission.status == 'submitted' %}bg-primary{% else %}bg-warning{% endif %}">
+                                            {{ submission.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ submission.submitted_at|date:"M j, Y" }}</td>
+                                    <td>{{ submission.score|default:"-" }}</td>
+                                    <td>
+                                        <a href="{% url 'submission_detail' submission.pk %}" class="btn btn-sm btn-primary">View</a>
+                                        {% if submission.status == 'submitted' %}
+                                            <a href="{% url 'submission_grade' submission.pk %}" class="btn btn-sm btn-success">Grade</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No submissions yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    {% with user_submission=project.submissions.filter.student=user.first %}
+                        {% if user_submission %}
+                            <div class="alert alert-info">
+                                <h5>Your Submission</h5>
+                                <p><strong>Status:</strong> {{ user_submission.get_status_display }}</p>
+                                <p><strong>Submitted:</strong> {{ user_submission.submitted_at|date:"F j, Y, g:i a" }}</p>
+                                {% if user_submission.status == 'graded' %}
+                                    <p><strong>Score:</strong> {{ user_submission.score }}/{{ project.max_score }}</p>
+                                    <p><strong>Feedback:</strong> {{ user_submission.feedback }}</p>
+                                {% endif %}
+                                {% if user_submission.status != 'graded' %}
+                                    <a href="{% url 'submission_edit' user_submission.pk %}" class="btn btn-primary">Edit Submission</a>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                You haven't submitted your work yet.
+                                <a href="{% url 'submission_create' project.pk %}" class="btn btn-primary mt-2">Submit Now</a>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

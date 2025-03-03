@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SPMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">Welcome, {{ user.get_full_name|default:user.username }}!</h1>
+            <p class="lead">Your {{ user.get_user_type_display }} Dashboard</p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if user.user_type == 'teacher' %}
+            <a href="{% url 'project_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Project
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        {% if user.user_type == 'student' %}
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3>{{ enrolled_classes_count }}</h3>
+                <p>Enrolled Classes</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3>{{ active_projects_count }}</h3>
+                <p>Active Projects</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>{{ completed_projects_count }}</h3>
+                <p>Completed Projects</p>
+            </div>
+        </div>
+        {% elif user.user_type == 'teacher' %}
+        <div class="col-md-3">
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-chalkboard"></i>
+                </div>
+                <h3>{{ classes_count }}</h3>
+                <p>Classes</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>{{ total_students }}</h3>
+                <p>Students</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <h3>{{ projects_count }}</h3>
+                <p>Projects</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card">
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>{{ pending_submissions }}</h3>
+                <p>Pending Reviews</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Recent Activity</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for activity in recent_activities %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ activity.title }}</h5>
+                                <small class="text-muted">{{ activity.timestamp|timesince }} ago</small>
+                            </div>
+                            <p class="mb-1">{{ activity.description }}</p>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="mb-0">No recent activity</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Upcoming Deadlines -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Upcoming Deadlines</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for deadline in upcoming_deadlines %}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">{{ deadline.title }}</h6>
+                            <p class="mb-1 text-muted">
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ deadline.due_date|date:"M j, Y" }}
+                            </p>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                            <p class="mb-0">No upcoming deadlines</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Quick Links</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-user me-2"></i> View Profile
+                        </a>
+                        {% if user.user_type == 'student' %}
+                        <a href="{% url 'submission_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-paper-plane me-2"></i> My Submissions
+                        </a>
+                        {% else %}
+                        <a href="{% url 'class_create' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus me-2"></i> Create New Class
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'project_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-project-diagram me-2"></i> View All Projects
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

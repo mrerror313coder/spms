@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to SPMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold mb-4">Student Project Management System</h1>
+            <p class="lead mb-4">A comprehensive platform for managing student projects, assignments, and collaborations. Streamline your academic workflow with SPMS.</p>
+            {% if not user.is_authenticated %}
+            <div class="d-grid gap-2 d-md-flex">
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-md-2">Get Started</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Login</a>
+            </div>
+            {% else %}
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+            {% endif %}
+        </div>
+        <div class="col-lg-6">
+            <img src="https://source.unsplash.com/random/600x400/?education" alt="Education" class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row py-5">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold">Features</h2>
+            <p class="lead">Everything you need to manage student projects effectively</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-tasks fa-3x text-primary mb-3"></i>
+                    <h3 class="h4 mb-3">Project Management</h3>
+                    <p>Create, assign, and track projects with ease. Set deadlines and monitor progress in real-time.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h3 class="h4 mb-3">Class Organization</h3>
+                    <p>Organize students into classes, manage enrollments, and facilitate group collaborations.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-bar fa-3x text-primary mb-3"></i>
+                    <h3 class="h4 mb-3">Progress Tracking</h3>
+                    <p>Monitor student progress, provide feedback, and grade submissions all in one place.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="row py-5">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold">How It Works</h2>
+            <p class="lead">Get started with SPMS in three simple steps</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <h3 class="mb-0">1</h3>
+                </div>
+                <h4>Create an Account</h4>
+                <p>Sign up as a student, teacher, or administrator to get started.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <h3 class="mb-0">2</h3>
+                </div>
+                <h4>Join or Create Classes</h4>
+                <p>Join existing classes or create new ones for your students.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <h3 class="mb-0">3</h3>
+                </div>
+                <h4>Manage Projects</h4>
+                <p>Create, submit, and track projects with ease.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="row py-5">
+        <div class="col-12 text-center">
+            <div class="bg-primary text-white p-5 rounded">
+                <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
+                <p class="lead mb-4">Join SPMS today and transform the way you manage student projects.</p>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-light btn-lg">Create Your Account</a>
+                {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg">Go to Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

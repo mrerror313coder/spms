@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ class.name }} - SPMS{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{{ class.name }}</h1>
+        <p class="lead">{{ class.description|default:"No description provided." }}</p>
+    </div>
+    <div class="col-md-4 text-end">
+        {% if user == class.teacher or user.user_type == 'admin' %}
+            <a href="{% url 'class_add_students' class.pk %}" class="btn btn-success">
+                <i class="fas fa-user-plus"></i> Add Students
+            </a>
+            <a href="{% url 'class_edit' class.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'class_delete' class.pk %}" class="btn btn-outline-danger">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Class Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Teacher:</strong> {{ class.teacher.get_full_name }}</p>
+                <p><strong>Created:</strong> {{ class.created_at|date:"F j, Y" }}</p>
+                <p><strong>Total Students:</strong> {{ class.students.count }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Students</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Projects</th>
+                                {% if user == class.teacher or user.user_type == 'admin' %}
+                                <th>Actions</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in class.students.all %}
+                            <tr>
+                                <td>{{ student.get_full_name }}</td>
+                                <td>{{ student.email }}</td>
+                                <td>
+                                    {% with submission_count=student.submissions.filter(project__assigned_class=class).count %}
+                                    {{ submission_count }} submission{{ submission_count|pluralize }}
+                                    {% endwith %}
+                                </td>
+                                {% if user == class.teacher or user.user_type == 'admin' %}
+                                <td>
+                                    <form method="post" action="{% url 'class_remove_student' class.pk student.pk %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to remove this student?')">
+                                            <i class="fas fa-user-minus"></i> Remove
+                                        </button>
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No students enrolled yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% if user == class.teacher or user.user_type == 'admin' %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Projects</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Due Date</th>
+                                <th>Submissions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in class.projects.all %}
+                            <tr>
+                                <td>{{ project.title }}</td>
+                                <td>{{ project.due_date|date:"M j, Y" }}</td>
+                                <td>{{ project.submissions.count }}</td>
+                                <td>
+                                    <a href="{% url 'project_detail' project.pk %}" class="btn btn-sm btn-primary">View</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No projects assigned yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'project_create' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus"></i> Create New Project
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
